@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AirWatch</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="main-header">
+  <h1>
+    <span class="grad">Air Quality</span><br>
+    Intelligence
+  </h1>
+  <p>Smart Campus – Live Air Monitoring</p>
+</header>
+
+<section class="building-select">
+  <div class="building-card" onclick="go('Anviksha')">
+  <h2>Anviksha</h2>
+  <div class="aqi-preview" id="aqi-Anviksha">AQI: --</div>
+</div>
+
+<div class="building-card" onclick="go('SOT')">
+  <h2>SOT</h2>
+  <div class="aqi-preview" id="aqi-SOT">AQI: --</div>
+</div>
+
+<div class="building-card" onclick="go('SOS')">
+  <h2>SOS</h2>
+  <div class="aqi-preview" id="aqi-SOS">AQI: --</div>
+</div>
+</section>
+
+<script>
+function go(name){
+  window.location.href = `/building/${name}`;
+}
+</script>
+
+<script>
+function calcAQI(d){
+  return Math.min(500, Math.round(d.CO2/4 + d.CO*2 + d.NOx));
+}
+
+function updateIndexAQI(name){
+  fetch(`/api/building/${name}`)
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById(`aqi-${name}`).innerText =
+        `AQI: ${calcAQI(d)}`;
+    });
+}
+
+["Anviksha","SOT","SOS"].forEach(updateIndexAQI);
+setInterval(() => {
+  ["Anviksha","SOT","SOS"].forEach(updateIndexAQI);
+}, 5000);
+</script>
+
+</body>
+</html>

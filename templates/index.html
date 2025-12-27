@@ -5,9 +5,10 @@
   <title>AirWatch</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
 
-<header class="main-header">
+<body class="index-page">
+
+<header class="main-header center">
   <h1>
     <span class="grad">Air Quality</span><br>
     Intelligence
@@ -16,46 +17,54 @@
 </header>
 
 <section class="building-select">
-  <div class="building-card" onclick="go('Anviksha')">
-  <h2>Anviksha</h2>
-  <div class="aqi-preview" id="aqi-Anviksha">AQI: --</div>
-</div>
 
-<div class="building-card" onclick="go('SOT')">
-  <h2>SOT</h2>
-  <div class="aqi-preview" id="aqi-SOT">AQI: --</div>
-</div>
+  <div class="building-card card-anviksha" onclick="go('Anviksha')">
+    <h2>Anviksha</h2>
+    <div class="aqi-preview" id="aqi-Anviksha">AQI: --</div>
+  </div>
 
-<div class="building-card" onclick="go('SOS')">
-  <h2>SOS</h2>
-  <div class="aqi-preview" id="aqi-SOS">AQI: --</div>
-</div>
+  <div class="building-card card-sot" onclick="go('SOT')">
+    <h2>SOT</h2>
+    <div class="aqi-preview" id="aqi-SOT">AQI: --</div>
+  </div>
+
+  <div class="building-card card-sos" onclick="go('SOS')">
+    <h2>SOS</h2>
+    <div class="aqi-preview" id="aqi-SOS">AQI: --</div>
+  </div>
+
 </section>
 
 <script>
-function go(name){
+function go(name) {
   window.location.href = `/building/${name}`;
 }
-</script>
 
-<script>
-function calcAQI(d){
-  return Math.min(500, Math.round(d.CO2/4 + d.CO*2 + d.NOx));
+function getColor(aqi) {
+  if (aqi <= 50) return "green";
+  if (aqi <= 100) return "yellow";
+  if (aqi <= 200) return "orange";
+  return "red";
 }
 
-function updateIndexAQI(name){
+function updateAQI(name) {
   fetch(`/api/building/${name}`)
-    .then(r => r.json())
-    .then(d => {
-      document.getElementById(`aqi-${name}`).innerText =
-        `AQI: ${calcAQI(d)}`;
+    .then(res => res.json())
+    .then(data => {
+      const el = document.getElementById(`aqi-${name}`);
+      el.innerText = `AQI: ${data.AQI}`;
+
+      const card = el.parentElement;
+      card.classList.remove("green","yellow","orange","red");
+      card.classList.add(getColor(data.AQI));
     });
 }
 
-["Anviksha","SOT","SOS"].forEach(updateIndexAQI);
+["Anviksha","SOT","SOS"].forEach(updateAQI);
+
 setInterval(() => {
-  ["Anviksha","SOT","SOS"].forEach(updateIndexAQI);
-}, 5000);
+  ["Anviksha","SOT","SOS"].forEach(updateAQI);
+}, 3000);
 </script>
 
 </body>

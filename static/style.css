@@ -1,10 +1,14 @@
 body {
-  background: #020617;
-  color: white;
-  font-family: Arial;
   margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(139,92,246,0.15), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(34,211,238,0.15), transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(236,72,153,0.15), transparent 40%),
+    linear-gradient(180deg, #020617, #020617);
+  color: white;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
-
 header {
   padding: 20px;
 }
@@ -21,11 +25,11 @@ button {
   cursor: pointer;
 }
 
-.gas-values {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  padding: 20px;
+.gas-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e5e7eb;   /* light gray, always visible */
+  margin-bottom: 4px;
 }
 
 .gas-card {
@@ -33,6 +37,11 @@ button {
   border: 1px solid #1e293b;
   padding: 15px;
   border-radius: 10px;
+}
+.gas-status {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
 }
 
 .chart-box {
@@ -42,7 +51,7 @@ button {
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:20px;
-  padding:30px;
+  padding: 16px 30px 30px;  
 }
 
 .gas-card{
@@ -81,13 +90,12 @@ canvas{
   align-items:center;
   justify-content:center;
 }
-.building-header{
-  display:flex;
-  align-items:center;
-  gap:20px;
-  padding:20px;
+.building-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 14px 24px 6px;
 }
-
 .gas-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -160,6 +168,21 @@ canvas{
   padding:40px 60px;
 }
 
+/* Back button stays left */
+.back-btn {
+  z-index: 2;
+}
+
+/* Title is truly centered */
+.building-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #e5e7eb;
+}
 .building-card{
   background:rgba(2,6,23,0.95);
   border-radius:20px;
@@ -231,3 +254,294 @@ canvas{
 .gas-status.status-bad {
   color: #ef4444;
 }
+.main-header.center {
+  text-align: center;
+  padding: 80px 20px 40px;
+}
+
+.main-header h1 {
+  font-size: 64px;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.main-header p {
+  margin-top: 14px;
+  font-size: 16px;
+  color: #94a3b8;
+}
+.building-select {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  padding: 60px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.building-card {
+  border-radius: 24px;
+  padding: 40px;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.building-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  background: radial-gradient(circle at top left, white, transparent 60%);
+}
+
+.building-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+}
+
+.building-card h2 {
+  font-size: 32px;
+  margin: 0;
+}
+
+.aqi-preview {
+  margin-top: 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.card-anviksha {
+  background: linear-gradient(135deg, #22d3ee33, #0f172a);
+  border: 1px solid #22d3ee55;
+}
+
+.card-sot {
+  background: linear-gradient(135deg, #eab30833, #0f172a);
+  border: 1px solid #eab30855;
+}
+
+.card-sos {
+  background: linear-gradient(135deg, #ef444433, #0f172a);
+  border: 1px solid #ef444455;
+}
+/* =====================================================
+   INDEX PAGE – SAFE ENHANCEMENTS
+   ===================================================== */
+.index-page .building-card {
+  backdrop-filter: blur(10px);
+}
+
+.index-page .building-card.green {
+  border: 1px solid rgba(34,197,94,0.5);
+  box-shadow: 0 0 35px rgba(34,197,94,0.35);
+}
+
+.index-page .building-card.yellow {
+  border: 1px solid rgba(234,179,8,0.5);
+  box-shadow: 0 0 35px rgba(234,179,8,0.35);
+}
+
+.index-page .building-card.orange {
+  border: 1px solid rgba(249,115,22,0.5);
+  box-shadow: 0 0 35px rgba(249,115,22,0.35);
+}
+
+.index-page .building-card.red {
+  border: 1px solid rgba(239,68,68,0.6);
+  box-shadow: 0 0 40px rgba(239,68,68,0.5);
+}
+
+
+/* =====================================================
+   BUILDING PAGE – SAFE ENHANCEMENTS
+   ===================================================== */
+.building-page .building-header {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.building-page .aqi-circle {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* AQI glow levels (set dynamically later if needed) */
+.building-page .aqi-circle.good {
+  border-color: #22c55e;
+  box-shadow: 0 0 30px rgba(34,197,94,0.5);
+}
+
+.building-page .aqi-circle.moderate {
+  border-color: #eab308;
+  box-shadow: 0 0 30px rgba(234,179,8,0.5);
+}
+
+.building-page .aqi-circle.poor {
+  border-color: #ef4444;
+  box-shadow: 0 0 35px rgba(239,68,68,0.55);
+}
+
+.building-page .gas-card {
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.building-page .gas-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+
+.building-page .gas-status.status-safe {
+  color: #22c55e;
+}
+
+.building-page .gas-status.status-moderate {
+  color: #eab308;
+}
+
+.building-page .gas-status.status-bad {
+  color: #ef4444;
+}
+/* ================= BUILDING PAGE – TOP METRICS ================= */
+.building-page .top-metrics {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 30px;
+  margin: 30px 40px;
+}
+
+.building-page .env-card {
+  background: rgba(2,6,23,0.9);
+  border-radius: 18px;
+  padding: 20px 30px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.building-page .env-label {
+  display: block;
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.building-page .env-value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+#tempCard .env-value {
+  color: #f472b6;
+}
+
+#humidityCard .env-value {
+  color: #60a5fa;
+}
+/* ===== TOP METRICS LAYOUT ===== */
+.top-metrics {
+  display: flex;
+  justify-content: center;   /* center items inside */
+  align-items: center;
+  gap: 32px;
+
+  width: fit-content;        /* 🔑 shrink to content */
+  margin: 20px auto 24px;    /* 🔑 center the group itself */
+}
+
+/* ===== HUMIDITY WATER CIRCLE ===== */
+.humidity-circle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid #60a5fa;
+  overflow: hidden;
+  background: #020617;
+  box-shadow: 0 0 22px rgba(96,165,250,0.55);
+}
+
+.water-container {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 0%;
+  overflow: hidden;
+  transition: height 0.6s ease;
+}
+
+.water-container svg {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 40px;
+  animation: waveMove 4s linear infinite;
+}
+
+@keyframes waveMove {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Text inside humidity */
+.humidity-text {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.humidity-text span {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e0f2fe;
+}
+
+.humidity-text small {
+  font-size: 12px;
+  color: #93c5fd;
+}
+
+/* Temperature card */
+.env-card {
+  padding: 18px 26px;
+  border-radius: 16px;
+  background: #020617;
+  text-align: center;
+}
+
+.env-label {
+  display: block;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.env-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f472b6;
+}
+/* Wrapper that centers everything on the PAGE */
+.top-metrics-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 8px 0 12px;   /* ↓ tighter vertical spacing */
+}
+
+/* The actual metrics row */
+.top-metrics {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+/* Prevent stretching */
+.humidity-meter,
+.aqi-meter,
+.env-card {
+  flex: 0 0 auto;
+}
+

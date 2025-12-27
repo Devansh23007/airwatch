@@ -7,28 +7,63 @@
   <link rel="stylesheet" href="/static/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="building-page">
+
 
 <header class="building-header">
-  <button onclick="window.location.href='/'">← Back</button>
-  <h2>{{ building }}</h2>
+  <button class="back-btn" onclick="window.location.href='/'">← Back</button>
+  <h2 class="building-title">{{ building }}</h2>
 </header>
+<div class="top-metrics-wrapper">
+<div class="top-metrics">
 
-<!-- AQI -->
-<div class="aqi-meter">
-  <div class="aqi-circle">
-    <span id="aqiValue">--</span>
-    <small>AQI</small>
+  <!-- HUMIDITY (LEFT) -->
+  <div class="humidity-meter">
+    <div class="humidity-circle">
+      <div class="water-container" id="waterFill">
+        <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+          <path
+            d="M0 20 
+               Q25 10 50 20 
+               T100 20 
+               T150 20 
+               T200 20 
+               V40 H0 Z"
+            fill="#60a5fa"/>
+        </svg>
+      </div>
+      <div class="humidity-text">
+        <span id="humidityValue">--%</span>
+        <small>Humidity</small>
+      </div>
+    </div>
   </div>
+
+  <!-- AQI (CENTER) -->
+  <div class="aqi-meter">
+    <div class="aqi-circle">
+      <span id="aqiValue">--</span>
+      <small>AQI</small>
+    </div>
+  </div>
+
+  <!-- TEMPERATURE (RIGHT) -->
+  <div class="env-card">
+    <span class="env-label">Temperature</span>
+    <span class="env-value" id="tempValue">--°C</span>
+  </div>
+
 </div>
+</div>  
 
 <!-- GAS CARDS -->
 <div class="gas-grid" id="gasGrid"></div>
 
 <script>
-  const BUILDING = "{{ building }}";
+  window.BUILDING = "{{ building }}";
 </script>
 <script src="/static/building.js"></script>
+
 
 </body>
 </html>

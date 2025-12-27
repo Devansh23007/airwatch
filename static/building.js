@@ -3,10 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const grid = document.getElementById("gasGrid");
   if (!grid) return;
 
+  // Gases to show charts for
   const gases = [
     "SO2","NOx","CO","Methane","Ammonia","CO2",
-    "Hydrogen","Benzene","LPG","Butane",
-    "Natural Gas","Temperature","Humidity"
+    "Hydrogen","Benzene","LPG","Butane","Natural Gas"
   ];
 
   const colors = {
@@ -14,51 +14,44 @@ document.addEventListener("DOMContentLoaded", () => {
     Methane:"#8b5cf6", Ammonia:"#34d399", CO2:"#a855f7",
     Hydrogen:"#38bdf8", Benzene:"#fb7185",
     LPG:"#f97316", Butane:"#eab308",
-    "Natural Gas":"#22c55e",
-    Temperature:"#f472b6", Humidity:"#60a5fa"
+    "Natural Gas":"#22c55e"
   };
 
-const safeLimits = {
-  SO2: 0.5,
-  NOx: 100,
-  CO: 9,
-  Methane: 1000,
-  Ammonia: 25,
-  CO2: 1000,
-  Hydrogen: 400,
-  Benzene: 1,
-  LPG: 500,
-  Butane: 500,
-  "Natural Gas": 500,
-  Temperature: 35,
-  Humidity: 70
-};
+  const safeLimits = {
+    SO2: 0.5, NOx: 100, CO: 9, Methane: 1000,
+    Ammonia: 25, CO2: 1000, Hydrogen: 400,
+    Benzene: 1, LPG: 500, Butane: 500,
+    "Natural Gas": 500
+  };
 
-function getStatus(gas, value) {
-  const limit = safeLimits[gas];
-  if (value <= limit * 0.7) return { text: "Safe", cls: "status-safe" };
-  if (value <= limit) return { text: "Moderate", cls: "status-moderate" };
-  return { text: "Bad", cls: "status-bad" };
-}
+  function getStatus(gas, value) {
+    const limit = safeLimits[gas];
+    if (value <= limit * 0.7) return { text: "Safe", cls: "status-safe" };
+    if (value <= limit) return { text: "Moderate", cls: "status-moderate" };
+    return { text: "Bad", cls: "status-bad" };
+  }
 
   const charts = {};
   const history = {};
   const labels = {};
   const MAX = 12;
 
-  function idSafe(t){ return t.replace(/\s/g,"_"); }
+  function idSafe(name) {
+    return name.replace(/\s/g, "_");
+  }
 
-  function createCard(gas){
+  // Create gas cards and charts
+  gases.forEach(gas => {
     const id = idSafe(gas);
 
     const card = document.createElement("div");
     card.className = "gas-card";
     card.innerHTML = `
-  <div class="gas-title">${gas}</div>
-  <div class="gas-value" id="val-${id}">--</div>
-  <div class="gas-status" id="status-${id}">--</div>
-  <canvas id="cv-${id}"></canvas>
-  `;
+      <div class="gas-title">${gas}</div>
+      <div class="gas-value" id="val-${id}">--</div>
+      <div class="gas-status" id="status-${id}">--</div>
+      <canvas id="cv-${id}"></canvas>
+    `;
     grid.appendChild(card);
 
     history[gas] = [];
@@ -82,82 +75,68 @@ function getStatus(gas, value) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false }
-        },
+        plugins: { legend: { display: false } },
         scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: "Time",
-              color: "#94a3b8",
-              font: { size: 9 }
-            },
-            ticks: {
-              color: "#94a3b8",
-              font: { size: 9 }
-            },
-            grid: {
-              color: "rgba(255,255,255,0.05)"
-            }
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: "Value",
-              color: "#94a3b8",
-              font: { size: 9 }
-            },
-            ticks: {
-              color: "#94a3b8",
-              font: { size: 9 }
-            },
-            grid: {
-              color: "rgba(255,255,255,0.05)"
-            }
-          }
+          x: { display: true },
+          y: { beginAtZero: true }
         }
       }
     });
-  }
+  });
 
-  gases.forEach(createCard);
-
-  function calcAQI(d){
-    return Math.min(500, Math.round(d.CO2/4 + d.CO*2 + d.NOx));
-  }
-
-  function update(){
-    fetch(`/api/building/${BUILDING}`)
-      .then(r => r.json())
+  // Fetch and update data
+  function update() {
+    fetch(`/api/building/${window.BUILDING}`)
+      .then(res => res.json())
       .then(data => {
 
-        document.getElementById("aqiValue").innerText = calcAQI(data);
+        // AQI
+        const aqiEl = document.getElementById("aqiValue");
+        if (aqiEl && typeof data.AQI === "number") {
+          aqiEl.innerText = data.AQI;
+        }
+
+        // Temperature & Humidity
+        const tempEl = document.getElementById("tempValue");
+        if (tempEl && data.Temperature !== undefined) {
+          tempEl.innerText = Number(data.Temperature) + "°C";
+        }
+
+        const hum = Number(data.Humidity);
+        const humEl = document.getElementById("humidityValue");
+        const water = document.getElementById("waterFill");
+
+        if (!isNaN(hum)) {
+          humEl.innerText = hum + "%";
+          water.style.height = hum + "%";
+        }
 
         const time = new Date().toLocaleTimeString();
 
         gases.forEach(gas => {
           const id = idSafe(gas);
-          const val = data[gas];
+          const val = Number(data[gas]);
 
-          document.getElementById(`val-${id}`).innerText = val;
+          if (!isNaN(val)) {
+            document.getElementById(`val-${id}`).innerText = val;
 
-          history[gas].push(val);
-          labels[gas].push(time);
-          
-          const status = getStatus(gas, val);
-          const statusEl = document.getElementById(`status-${id}`);
-          statusEl.innerText = status.text;
-          statusEl.className = `gas-status ${status.cls}`;
+            history[gas].push(val);
+            labels[gas].push(time);
 
-          if(history[gas].length > MAX){
-            history[gas].shift();
-            labels[gas].shift();
+            if (history[gas].length > MAX) {
+              history[gas].shift();
+              labels[gas].shift();
+            }
+
+            const status = getStatus(gas, val);
+            const st = document.getElementById(`status-${id}`);
+            st.innerText = status.text;
+            st.className = `gas-status ${status.cls}`;
+
+            charts[gas].update();
+          } else {
+            document.getElementById(`val-${id}`).innerText = "--";
           }
-
-          charts[gas].update();
         });
       })
       .catch(err => console.error("Update error:", err));

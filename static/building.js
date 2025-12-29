@@ -1,153 +1,186 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const grid = document.getElementById("gasGrid");
-  if (!grid) return;
+  /* ================= BASIC REFERENCES ================= */
 
-  // Gases to show charts for
-  const gases = [
-    "SO2","NOx","CO","Methane","Ammonia","CO2",
-    "Hydrogen","Benzene","LPG","Butane","Natural Gas"
+  const gasGrid = document.getElementById("gasGrid");
+
+  const aqiValueEl = document.getElementById("aqiValue");
+  const tempValueEl = document.getElementById("tempValue");
+  const humidityValueEl = document.getElementById("humidityValue");
+  const waterFillEl = document.getElementById("waterFill");
+
+  /* ================= GAS CONFIG ================= */
+
+  const GASES = [
+    { key: "SO2", unit: "ppm" },
+    { key: "NOx", unit: "ppm" },
+    { key: "CO", unit: "ppm" },
+    { key: "Methane", unit: "ppm" },
+    { key: "Ammonia", unit: "ppm" },
+    { key: "CO2", unit: "ppm" },
+    { key: "Hydrogen", unit: "ppm" },
+    { key: "Benzene", unit: "ppm" },
+    { key: "LPG", unit: "ppm" },
+    { key: "Butane", unit: "ppm" },
+    { key: "Natural Gas", unit: "ppm" }
   ];
+const GAS_ZONES = {
+  "SO2": [0.2, 0.4, 0.6, 0.8],
+  "NOx": [20, 40, 60, 80],
+  "CO": [9, 15, 25, 35],
+  "Methane": [500, 1000, 1500, 1800],
+  "Ammonia": [10, 20, 30, 40],
+  "CO2": [600, 1000, 1400, 1800],
+  "Hydrogen": [40, 80, 120, 160],
+  "Benzene": [1, 2, 3, 4],
+  "LPG": [100, 200, 300, 400],
+  "Butane": [100, 200, 300, 400],
+  "Natural Gas": [200, 400, 600, 800]
+};
 
-  const colors = {
-    SO2:"#22d3ee", NOx:"#facc15", CO:"#ef4444",
-    Methane:"#8b5cf6", Ammonia:"#34d399", CO2:"#a855f7",
-    Hydrogen:"#38bdf8", Benzene:"#fb7185",
-    LPG:"#f97316", Butane:"#eab308",
-    "Natural Gas":"#22c55e"
-  };
+  /* ================= GAUGE STATE ================= */
 
-  const safeLimits = {
-    SO2: 0.5, NOx: 100, CO: 9, Methane: 1000,
-    Ammonia: 25, CO2: 1000, Hydrogen: 400,
-    Benzene: 1, LPG: 500, Butane: 500,
-    "Natural Gas": 500
-  };
+  const gasState = {};   // min / max tracking per gas
 
-  function getStatus(gas, value) {
-    const limit = safeLimits[gas];
-    if (value <= limit * 0.7) return { text: "Safe", cls: "status-safe" };
-    if (value <= limit) return { text: "Moderate", cls: "status-moderate" };
-    return { text: "Bad", cls: "status-bad" };
-  }
+  const ARC_START = -90;
+  const ARC_SWEEP = 180;
 
-  const charts = {};
-  const history = {};
-  const labels = {};
-  const MAX = 12;
+  /* ================= CREATE GAUGES ================= */
 
-  function idSafe(name) {
-    return name.replace(/\s/g, "_");
-  }
+  function createGauges() {
+    gasGrid.innerHTML = "";
 
-  // Create gas cards and charts
-  gases.forEach(gas => {
-    const id = idSafe(gas);
+    GASES.forEach(gas => {
+      gasState[gas.key] = { min: Infinity, max: -Infinity };
 
-    const card = document.createElement("div");
-    card.className = "gas-card";
-    card.innerHTML = `
-      <div class="gas-title">${gas}</div>
-      <div class="gas-value" id="val-${id}">--</div>
-      <div class="gas-status" id="status-${id}">--</div>
-      <canvas id="cv-${id}"></canvas>
-    `;
-    grid.appendChild(card);
+      const card = document.createElement("div");
+      card.className = "gauge-card";
 
-    history[gas] = [];
-    labels[gas] = [];
+      card.innerHTML = `
+        <div class="gauge-clip">
+          <div class="gauge">
 
-    const ctx = document.getElementById(`cv-${id}`).getContext("2d");
+            <div class="arc"></div>
 
-    charts[gas] = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: labels[gas],
-        datasets: [{
-          data: history[gas],
-          borderColor: colors[gas],
-          borderWidth: 2,
-          tension: 0.4,
-          fill: true,
-          backgroundColor: colors[gas] + "44"
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { display: true },
-          y: { beginAtZero: true }
-        }
-      }
+            <div class="needle-wrapper">
+              <div class="needle-container" id="needle-${gas.key}">
+                <div class="needle"></div>
+              </div>
+              <div class="center-dot"></div>
+            </div>
+
+            <div class="gauge-text">
+              <div class="gas-name">${gas.key}</div>
+              <div class="gas-value">
+                <span id="value-${gas.key}">--</span> ${gas.unit}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+
+      /* CLICK → GAS DETAIL PAGE */
+      card.addEventListener("click", () => {
+        window.location.href = `/gas/${window.BUILDING}/${gas.key}`;
+      });
+
+      gasGrid.appendChild(card);
     });
-  });
+  }
 
-  // Fetch and update data
-  function update() {
+  /* ================= UPDATE ONE GAUGE ================= */
+
+function updateGauge(gasKey, value) {
+  const zones = GAS_ZONES[gasKey];
+  if (!zones) return;
+
+  /*
+    zones = [g, gy, y, yr]
+    Anything > yr is FULL RED
+  */
+
+  let percent;
+
+  if (value <= zones[0]) {
+    // GREEN
+    percent = value / zones[0] * 0.25;
+  }
+  else if (value <= zones[1]) {
+    // GREEN → YELLOW
+    percent =
+      0.25 +
+      ((value - zones[0]) / (zones[1] - zones[0])) * 0.25;
+  }
+  else if (value <= zones[2]) {
+    // YELLOW
+    percent =
+      0.50 +
+      ((value - zones[1]) / (zones[2] - zones[1])) * 0.25;
+  }
+  else if (value <= zones[3]) {
+    // YELLOW → RED
+    percent =
+      0.75 +
+      ((value - zones[2]) / (zones[3] - zones[2])) * 0.25;
+  }
+  else {
+    // 🔥 FULL RED (TOUCH ARC END)
+    percent = 1.0;
+  }
+
+  // Clamp safety
+  percent = Math.max(0, Math.min(1, percent));
+
+  const angle = ARC_START + percent * ARC_SWEEP;
+
+  const needle = document.getElementById(`needle-${gasKey}`);
+  const valueEl = document.getElementById(`value-${gasKey}`);
+
+  if (needle) needle.style.transform = `rotate(${angle}deg)`;
+  if (valueEl) valueEl.innerText = value.toFixed(1);
+}
+
+
+  /* ================= FETCH & UPDATE ================= */
+
+  function updateBuilding() {
     fetch(`/api/building/${window.BUILDING}`)
       .then(res => res.json())
       .then(data => {
 
-        // AQI
-        const aqiEl = document.getElementById("aqiValue");
-        if (aqiEl && typeof data.AQI === "number") {
-          aqiEl.innerText = data.AQI;
+        /* ---------- TOP METRICS ---------- */
+
+        if (aqiValueEl && data.AQI !== undefined) {
+          aqiValueEl.innerText = data.AQI;
         }
 
-        // Temperature & Humidity
-        const tempEl = document.getElementById("tempValue");
-        if (tempEl && data.Temperature !== undefined) {
-          tempEl.innerText = Number(data.Temperature) + "°C";
-        }
-        
-        
-        const hum = Number(data.Humidity);
-        const humEl = document.getElementById("humidityValue");
-        const water = document.getElementById("waterFill");
-
-        if (!isNaN(hum)) {
-          humEl.innerText = hum + "%";
-          water.style.height = hum + "%";
+        if (tempValueEl && data.Temperature !== undefined) {
+          tempValueEl.innerText = `${data.Temperature}°C`;
         }
 
-        const time = new Date().toLocaleTimeString();
-        let tempHover = document.getElementById(`temp-${name}`);
-        let humHover  = document.getElementById(`hum-${name}`);
+        if (humidityValueEl && data.Humidity !== undefined) {
+          humidityValueEl.innerText = `${data.Humidity}%`;
+          if (waterFillEl) {
+            waterFillEl.style.height = `${data.Humidity}%`;
+          }
+        }
 
-        if (tempHover) tempHover.innerText = data.Temperature ?? "--";
-        if (humHover)  humHover.innerText  = data.Humidity ?? "--";
+        /* ---------- GAS GAUGES ---------- */
 
-        gases.forEach(gas => {
-          const id = idSafe(gas);
-          const val = Number(data[gas]);
-
-          if (!isNaN(val)) {
-            document.getElementById(`val-${id}`).innerText = val;
-
-            history[gas].push(val);
-            labels[gas].push(time);
-
-            if (history[gas].length > MAX) {
-              history[gas].shift();
-              labels[gas].shift();
-            }
-
-            const status = getStatus(gas, val);
-            const st = document.getElementById(`status-${id}`);
-            st.innerText = status.text;
-            st.className = `gas-status ${status.cls}`;
-
-            charts[gas].update();
-          } else {
-            document.getElementById(`val-${id}`).innerText = "--";
+        GASES.forEach(gas => {
+          if (data[gas.key] !== undefined) {
+            updateGauge(gas.key, Number(data[gas.key]));
           }
         });
       })
-      .catch(err => console.error("Update error:", err));
+      .catch(err => console.error("Building update error:", err));
   }
 
-  update();
-  setInterval(update, 4000);
+  /* ================= INIT ================= */
+
+  createGauges();
+  updateBuilding();
+  setInterval(updateBuilding, 3000);
+
 });

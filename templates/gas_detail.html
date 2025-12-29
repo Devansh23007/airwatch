@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ gas_name }} | {{ building }}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="gas-detail-page">
+
+<header>
+  <button onclick="history.back()">← Back</button>
+  <h2>{{ gas_name }} — {{ building }}</h2>
+</header>
+
+<!-- TOP -->
+<section class="gas-summary">
+  <div class="gas-main">
+    <div class="gas-value">
+      <span id="gasValue">--</span>
+      <span class="gas-unit">ppm</span>
+    </div>
+
+    <span id="gasStatus" class="status-badge">--</span>
+  </div>
+</section>
+
+<!-- CHART -->
+<section class="gas-chart-wrapper">
+  <div class="gas-chart-large">
+    <canvas id="gasChart"></canvas>
+  </div>
+</section>
+
+<div style="text-align:center; margin-top: 20px;">
+  <button onclick="window.location.href='/gas/{{ building }}/{{ gas_name }}/history'"
+          class="history-btn">
+    View Full History
+  </button>
+</div>
+
+<script>
+  window.BUILDING = "{{ building }}";
+  window.GAS = "{{ gas_name }}";
+</script>
+<script src="/static/gas_detail.js"></script>
+
+</body>
+</html>

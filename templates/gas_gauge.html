@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gas Gauge Test</title>
+
+  <!-- IMPORTANT: Flask static paths -->
+  <link rel="stylesheet" href="/static/gas_gauge.css">
+</head>
+<body>
+<div class="gauge-card">
+  <div class="gauge-clip">
+    <div class="gauge">
+
+      <div class="arc"></div>
+
+      <div class="needle-wrapper">
+        <div class="needle-container" id="needle">
+          <div class="needle"></div>
+        </div>
+        <div class="center-dot"></div>
+      </div>
+
+    <div class="gauge-text">
+  <div class="gas-name">Methane</div>
+  <div class="gas-value">
+    <span id="valueText">27.3</span> ppm
+  </div>
+</div>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- TEMP TEST BUTTON (OPTIONAL – REMOVE LATER) -->
+  <div style="margin-top: 30px;">
+    <button onclick="simulate()">Simulate New Value</button>
+  </div>
+
+  <script src="/static/gas_gauge.js"></script>
+</body>
+</html>

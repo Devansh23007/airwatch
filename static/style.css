@@ -616,3 +616,324 @@ canvas {
   gap: 6px;
   white-space: nowrap;
 }
+/* =====================================================
+   HISTORY TABLE (BUILDING PAGE)
+   ===================================================== */
+
+.history-btn {
+  background: rgba(34,211,238,0.15);
+  color: #22d3ee;
+  border: 1px solid rgba(34,211,238,0.4);
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.history-btn:hover {
+  background: rgba(34,211,238,0.25);
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.history-table th,
+.history-table td {
+  padding: 10px 12px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.history-table th {
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.history-table td {
+  font-size: 14px;
+}
+
+.history-table tr:hover {
+  background: rgba(255,255,255,0.05);
+}
+/* ===== BUILDING PAGE SAFETY LOCK ===== */
+
+.building-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Top section must never collapse */
+.top-metrics-wrapper {
+  flex-shrink: 0;
+}
+
+/* Gas section MUST own space */
+.gas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+
+  padding: 30px;
+
+  min-height: 420px;      /* 🔒 prevents collapse */
+  align-content: start;
+}
+
+/* Each gas card has fixed height */
+.gas-card {
+  height: 170px;
+  min-height: 170px;
+}
+.gas-card canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+/* ========== GAS DETAIL PAGE (PREMIUM UI) ========== */
+
+.gas-detail-page {
+  background: radial-gradient(circle at top left, #1e1b4b, #020617);
+  min-height: 100vh;
+  padding: 24px;
+  color: #e5e7eb;
+}
+
+/* HEADER */
+.gas-detail-page header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.gas-detail-page header button {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* TOP VALUE CARD */
+.gas-summary {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #020617, #020617cc);
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  margin-bottom: 26px;
+}
+
+.gas-summary h1 {
+  font-size: 56px;
+  font-weight: 700;
+}
+
+.gas-summary span {
+  font-size: 18px;
+  opacity: 0.85;
+}
+
+/* STATUS BADGE */
+.status-badge {
+  margin-left: auto;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.status-badge.safe {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.status-badge.moderate {
+  background: linear-gradient(90deg, #facc15, #eab308);
+  color: #000;
+}
+
+.status-badge.danger {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+/* CHART CARD */
+.gas-chart {
+  background: linear-gradient(135deg, #020617, #020617cc);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 0 50px rgba(0,0,0,0.7);
+  margin-bottom: 26px;
+}
+
+/* HISTORY TABLE */
+.gas-history {
+  background: linear-gradient(135deg, #020617, #020617cc);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.gas-history table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.gas-history th {
+  color: #60a5fa;
+  font-weight: 600;
+  padding-bottom: 12px;
+}
+
+.gas-history td {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+/* ========== GAS HISTORY PAGE ========== */
+
+.gas-history-page {
+  background: radial-gradient(circle at top left, #1e1b4b, #020617);
+  min-height: 100vh;
+  padding: 24px;
+  color: #e5e7eb;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.history-header button {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.history-card {
+  max-width: 900px;
+  margin: auto;
+  background: linear-gradient(135deg, #020617, #020617cc);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.history-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-card th {
+  color: #60a5fa;
+  padding-bottom: 12px;
+  text-align: left;
+}
+
+.history-card td {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+/* ===== CENTERED CARD-STYLE GAS CHART ===== */
+
+.gas-chart-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.gas-chart {
+  width: 100%;
+  max-width: 420px;     /* 👈 SAME SIZE AS GAS CARDS */
+  height: 220px;
+  background: linear-gradient(135deg, #020617, #020617cc);
+  border-radius: 18px;
+  padding: 16px 18px;
+  box-shadow: 0 0 35px rgba(0,0,0,0.7);
+}
+.gas-chart canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+/* ===== GAS VALUE + STATUS COMPACT ===== */
+
+/* ===== CENTERED GAS VALUE ===== */
+
+.gas-summary {
+  background: linear-gradient(135deg, #020617, #020617cc);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 36px;
+  display: flex;
+  justify-content: center;   /* 👈 center block */
+}
+
+.gas-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.gas-value {
+  font-size: 64px;           /* 👈 BIG */
+  font-weight: 800;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.gas-unit {
+  font-size: 22px;
+  opacity: 0.75;
+}
+
+.status-badge {
+  font-size: 16px;
+  padding: 10px 22px;
+  border-radius: 999px;
+}
+/* ===== BIG CENTERED GAS CHART ===== */
+
+.gas-chart-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.gas-chart-large {
+  width: 100%;
+  max-width: 900px;      /* 👈 BIG but not full width */
+  height: 360px;         /* 👈 Proper chart height */
+  background: linear-gradient(135deg, #020617, #020617cc);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 0 50px rgba(0,0,0,0.7);
+}
+
+.gas-chart-large canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+/* ===== FORCE CANVAS VISIBILITY ===== */
+
+.gas-chart-large {
+  position: relative;
+}
+
+.gas-chart-large canvas {
+  position: absolute;
+  inset: 24px;           /* respects padding */
+  width: calc(100% - 48px) !important;
+  height: calc(100% - 48px) !important;
+}
+

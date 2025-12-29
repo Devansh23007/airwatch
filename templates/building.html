@@ -5,6 +5,7 @@
   <title>{{ building }}</title>
 
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/gas_gauge.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="building-page">
@@ -59,14 +60,25 @@
 </div>
 </div>  
 
-<!-- GAS CARDS -->
-<div class="gas-grid" id="gasGrid"></div>
+<!-- GAS GAUGES -->
+<div class="gas-grid" id="gasGrid">
+  <!-- gauges injected by JS -->
+</div>
+
+<!-- HISTORY BUTTON -->
+<div style="text-align:center; margin: 20px 0;">
+  <button class="history-btn"
+        onclick="window.location.href='/history/{{ building }}'">
+  View History
+</button>
+</div>
+
+
 
 <script>
   window.BUILDING = "{{ building }}";
 </script>
 <script src="/static/building.js"></script>
-
 
 </body>
 </html>

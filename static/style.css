@@ -575,3 +575,44 @@ canvas {
   text-transform: uppercase;
 }
 
+/* =====================================================
+   INDEX PAGE – RIGHT SIDE HOVER INFO (CLEAN)
+   ===================================================== */
+
+.index-page .building-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover info container */
+.index-page .hover-info {
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-50%);
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e7eb;
+
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none; /* keeps click working */
+}
+
+/* Show only temp & humidity on hover */
+.index-page .building-card:hover .hover-info {
+  opacity: 1;
+}
+
+/* Optional: subtle alignment polish */
+.index-page .hover-info div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}

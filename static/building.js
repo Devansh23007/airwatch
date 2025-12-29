@@ -101,7 +101,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (tempEl && data.Temperature !== undefined) {
           tempEl.innerText = Number(data.Temperature) + "°C";
         }
-
+        
+        
         const hum = Number(data.Humidity);
         const humEl = document.getElementById("humidityValue");
         const water = document.getElementById("waterFill");
@@ -112,6 +113,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const time = new Date().toLocaleTimeString();
+        let tempHover = document.getElementById(`temp-${name}`);
+        let humHover  = document.getElementById(`hum-${name}`);
+
+        if (tempHover) tempHover.innerText = data.Temperature ?? "--";
+        if (humHover)  humHover.innerText  = data.Humidity ?? "--";
 
         gases.forEach(gas => {
           const id = idSafe(gas);

@@ -18,19 +18,37 @@
 
 <section class="building-select">
 
+  <!-- ANVIKSHA -->
   <div class="building-card card-anviksha" onclick="go('Anviksha')">
     <h2>Anviksha</h2>
     <div class="aqi-preview" id="aqi-Anviksha">AQI: --</div>
+
+    <div class="hover-info">
+      <div>🌡 <span id="temp-Anviksha">--</span>°C</div>
+      <div>💧 <span id="hum-Anviksha">--</span>%</div>
+    </div>
   </div>
 
+  <!-- SOT -->
   <div class="building-card card-sot" onclick="go('SOT')">
     <h2>SOT</h2>
     <div class="aqi-preview" id="aqi-SOT">AQI: --</div>
+
+    <div class="hover-info">
+      <div>🌡 <span id="temp-SOT">--</span>°C</div>
+      <div>💧 <span id="hum-SOT">--</span>%</div>
+    </div>
   </div>
 
+  <!-- SOS -->
   <div class="building-card card-sos" onclick="go('SOS')">
     <h2>SOS</h2>
     <div class="aqi-preview" id="aqi-SOS">AQI: --</div>
+
+    <div class="hover-info">
+      <div>🌡 <span id="temp-SOS">--</span>°C</div>
+      <div>💧 <span id="hum-SOS">--</span>%</div>
+    </div>
   </div>
 
 </section>
@@ -51,17 +69,38 @@ function updateAQI(name) {
   fetch(`/api/building/${name}`)
     .then(res => res.json())
     .then(data => {
-      const el = document.getElementById(`aqi-${name}`);
-      el.innerText = `AQI: ${data.AQI}`;
 
-      const card = el.parentElement;
-      card.classList.remove("green","yellow","orange","red");
-      card.classList.add(getColor(data.AQI));
-    });
+      /* AQI */
+      const aqiEl = document.getElementById(`aqi-${name}`);
+      if (aqiEl && typeof data.AQI === "number") {
+        aqiEl.innerText = `AQI: ${data.AQI}`;
+
+        const card = aqiEl.parentElement;
+        card.classList.remove("green","yellow","orange","red");
+        card.classList.add(getColor(data.AQI));
+      }
+
+      /* Hover info (SAFE: only update if exists) */
+      const tempHover = document.getElementById(`temp-${name}`);
+      const humHover  = document.getElementById(`hum-${name}`);
+
+      if (tempHover) {
+        tempHover.innerText =
+          data.Temperature !== undefined ? data.Temperature : "--";
+      }
+
+      if (humHover) {
+        humHover.innerText =
+          data.Humidity !== undefined ? data.Humidity : "--";
+      }
+    })
+    .catch(err => console.error("Index update error:", err));
 }
 
+/* Initial load */
 ["Anviksha","SOT","SOS"].forEach(updateAQI);
 
+/* Refresh every 3 seconds */
 setInterval(() => {
   ["Anviksha","SOT","SOS"].forEach(updateAQI);
 }, 3000);

@@ -1,5 +1,8 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, send_file
 import random, threading, time, sqlite3
+import csv
+import os
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -104,6 +107,46 @@ def save_to_db(building, data):
         ))
         db.commit()
 
+# ===================== CSV PER BUILDING (UPDATED) =====================
+
+DATA_DIR = "data"
+os.makedirs(DATA_DIR, exist_ok=True)
+
+def save_to_csv(building, data):
+    file_path = os.path.join(DATA_DIR, f"{building}.csv")
+    file_exists = os.path.isfile(file_path)
+
+    with open(file_path, mode="a", newline="") as f:
+        writer = csv.writer(f)
+
+        if not file_exists:
+            writer.writerow([
+                "timestamp", "building",
+                "AQI", "Temperature", "Humidity",
+                "SO2", "NOx", "CO", "Methane", "Ammonia",
+                "CO2", "Hydrogen", "Benzene",
+                "LPG", "Butane", "Natural_Gas"
+            ])
+
+        writer.writerow([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            building,
+            data["AQI"],
+            data["Temperature"],
+            data["Humidity"],
+            data["SO2"],
+            data["NOx"],
+            data["CO"],
+            data["Methane"],
+            data["Ammonia"],
+            data["CO2"],
+            data["Hydrogen"],
+            data["Benzene"],
+            data["LPG"],
+            data["Butane"],
+            data["Natural Gas"]
+        ])
+
 # ===================== BACKGROUND UPDATE =====================
 
 def update_all():
@@ -112,6 +155,7 @@ def update_all():
         d["AQI"] = calculate_aqi(d)
         BUILDING_DATA[b] = d
         save_to_db(b, d)
+        save_to_csv(b, d)
 
 def background():
     while True:
@@ -212,13 +256,11 @@ def api_gas(building, gas_name):
         "history": history[::-1]
     })
 
-# ===================== RUN =====================
 # ===================== BUILDING HISTORY =====================
 
 @app.route("/history/<building>")
 def history(building):
     return render_template("history.html", building=building)
-
 
 @app.route("/api/history/<building>")
 def api_history(building):
@@ -241,6 +283,21 @@ def api_history(building):
             "Humidity": r[3]
         } for r in rows
     ])
+
+@app.route("/download/<building>/csv")
+def download_building_csv(building):
+    file_path = os.path.join("data", f"{building}.csv")
+
+    if not os.path.exists(file_path):
+        return "CSV file not found", 404
+
+    return send_file(
+        file_path,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name=f"{building}_history.csv"
+    )
+# ===================== RUN =====================
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

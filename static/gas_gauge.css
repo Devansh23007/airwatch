@@ -136,33 +136,40 @@ body {
 }
 
 /* ================= TEXT INSIDE GAUGE ================= */
-/* TEXT INSIDE GAUGE */
 .gauge-text {
   position: absolute;
+  top: 46px;                 /* 🔑 moves text ABOVE needle center */
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
-  top: 78px;                 /* centered inside arc */
   text-align: center;
   pointer-events: none;
+  z-index: 10;
 }
 
 .gas-name {
-  font-size: 11px;           /* small & subtle */
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.4px;
   color: #94a3b8;
-  margin-bottom: 2px;
+  letter-spacing: 0.4px;
 }
 
+/* GAS READING */
 .gas-value {
-  font-size: 16px;           /* readable but compact */
-  font-weight: 600;
-  color: #e5e7eb;
-  line-height: 1;
-}
+  position: absolute;
+  top: 38px;          /* move reading upward */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 11;
 
-.gas-value span {
-  font-size: 18px;           /* value slightly emphasized */
+  font-size: 18px;
   font-weight: 700;
+  color: #e5e7eb;
+  white-space: nowrap;
+}
+.gas-value span {
+  font-size: 22px;        /* number slightly bigger */
+  font-weight: 800;
 }
 
 .needle-container,

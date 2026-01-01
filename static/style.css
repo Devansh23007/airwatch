@@ -8,13 +8,44 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(139,92,246,0.15), transparent 40%),
-    radial-gradient(circle at 80% 30%, rgba(34,211,238,0.15), transparent 40%),
-    radial-gradient(circle at 50% 80%, rgba(236,72,153,0.15), transparent 40%),
-    linear-gradient(180deg, #020617, #020617);
+
+  /* Calm animated dark background */
+  background: linear-gradient(
+    120deg,
+    #020617,
+    #0f172a,
+    #020617
+  );
+  background-size: 300% 300%;
+  animation: bgFlow 20s ease infinite;
+
   color: #e5e7eb;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Slow, non-distracting animation */
+@keyframes bgFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(56, 189, 248, 0.06),
+      transparent 55%
+    );
+  pointer-events: none;
 }
 
 /* =====================================================
@@ -937,3 +968,103 @@ canvas {
   height: calc(100% - 48px) !important;
 }
 
+/* ===== BUILDING CARDS – CLEAN & CALM ===== */
+
+.building-card {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.9),
+    rgba(2, 6, 23, 0.95)
+  );
+  border-radius: 22px;
+  padding: 28px;
+  min-width: 260px;
+
+  /* ❌ remove aggressive glow */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.6);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover – soft premium lift */
+.building-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.8);
+}
+.building-card h2 {
+  color: #e5e7eb;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.building-card .aqi-text {
+  color: #67e8f9;   /* soft cyan */
+  font-size: 18px;
+  font-weight: 500;
+}
+/* ========= FORCE GLOBAL BACKGROUND OVERRIDE ========= */
+
+html,
+body {
+  margin: 0 !important;
+  min-height: 100vh !important;
+
+  background: linear-gradient(
+    120deg,
+    #020617,
+    #0f172a,
+    #020617
+  ) !important;
+
+  background-size: 300% 300% !important;
+  animation: bgFlow 20s ease infinite !important;
+
+  color: #e5e7eb;
+}
+@keyframes bgFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+/* ========= REMOVE AGGRESSIVE RED GLOW ========= */
+
+.building-card {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+.building-card::before,
+.building-card::after {
+  display: none !important;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.download-btn {
+  padding: 8px 14px;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  font-size: 14px;
+}
+
+.download-btn:hover {
+  background: #020617;
+}
